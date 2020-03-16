@@ -10,6 +10,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class Covid19Confirmed {
@@ -30,12 +32,11 @@ public class Covid19Confirmed {
 
         StringReader stringReader = new StringReader(forObject);
         CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(stringReader);
-
-
+        LocalDate today = LocalDate.now();
         for (CSVRecord strings : parser) {
             double lat = Double.parseDouble(strings.get("Lat"));
             double lon = Double.parseDouble(strings.get("Long"));
-            String text = strings.get("3/15/20");
+            String text = strings.get(today.minusDays(1).format(DateTimeFormatter.ofPattern("M/dd/yy")));
             dataRepository.addPoint(new point(lat, lon, text));
         }
     }
