@@ -17,7 +17,8 @@ public class MapController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String getMap(Model model) {
-        model.addAttribute("pointList", dataRepository.getPointList());
+        model.addAttribute("confirmedList", dataRepository.getConfirmedList());
+
         return "map";
     }
 

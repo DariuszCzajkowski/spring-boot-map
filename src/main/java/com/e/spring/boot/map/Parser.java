@@ -14,31 +14,29 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
-public class Covid19Confirmed {
+public class Parser {
 
-    public static final String COVID_CONFIRMED_URL =
-            "https://github.com/CSSEGISandData/COVID-19/raw/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
+    public static final String COVID_CONFIRMED_URL = "https://github.com/CSSEGISandData/COVID-19/raw/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
 
     private DataRepository dataRepository;
+    private RestTemplate restTemplate = new RestTemplate();
 
-    public Covid19Confirmed(DataRepository dataRepository) {
+    public Parser(DataRepository dataRepository) {
         this.dataRepository = dataRepository;
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void get() throws IOException, InterruptedException {
-        RestTemplate restTemplate = new RestTemplate();
-        String forObject = restTemplate.getForObject(COVID_CONFIRMED_URL, String.class);
+    public void getConfirmed() throws IOException {
 
-        StringReader stringReader = new StringReader(forObject);
+        String confirmedCases = restTemplate.getForObject(COVID_CONFIRMED_URL, String.class);
+        StringReader stringReader = new StringReader(confirmedCases);
         CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(stringReader);
         LocalDate today = LocalDate.now();
         for (CSVRecord strings : parser) {
             double lat = Double.parseDouble(strings.get("Lat"));
             double lon = Double.parseDouble(strings.get("Long"));
-            String text = strings.get(today.minusDays(1).format(DateTimeFormatter.ofPattern("M/dd/yy")));
-            dataRepository.addPoint(new point(lat, lon, text));
+            String confirmed = strings.get(today.minusDays(1).format(DateTimeFormatter.ofPattern("M/dd/yy")));
+            dataRepository.addConfirmedPoint(new Point(lat, lon, confirmed));
         }
     }
-
 }

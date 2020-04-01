@@ -1,20 +1,20 @@
 package com.e.spring.boot.map;
 
-public class point {
+public class Point {
 
 
     private double x;
     private double y;
     private String text;
 
-
-    public point(double x, double y, String text) {
+    public Point(double x, double y, String text) {
         this.x = x;
         this.y = y;
         this.text = text;
+
     }
 
-    public point() {
+    public Point() {
     }
 
     public double getX() {
